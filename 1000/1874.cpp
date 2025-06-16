@@ -62,46 +62,28 @@ int main(){
 
             state.push_back('+');
         }
-
-        if (stack.top() < input ){  // 
-            while(stack.top() < input && element <= N) {
-                stack.push(element++);
-
-                state.push_back('+');
-            }
-            // push as best it could
-        }
-        else if (stack.top() > input) {
-            while(!stack.empty() && stack.top() > input){
-                stack.pop();
-                state.push_back('-');
-            }
-        }
-
-
         
-        if (!stack.empty() && stack.top() == input ){
-            stack.pop(); // 
-            state.push_back('-'); 
+        while(stack.top() != input){
+
+            if (element > N){ 
+                printf("NO");
+                return 0;
+            }
+
+            stack.push(element++);
+            state.push_back('+');
         }
-
+        stack.pop();
+        state.push_back('-');
     }
-        // Now we look at stack    
+        // Now we look at stack  
+    if (!stack.empty()){
+        cout << "NO";
+        return 0;
+    }  
 
-    for (int i=0;i<state.size();i++){
-        cout << state[i] << '\n';
+    for (vector<char>::iterator it = state.begin();it!=state.end();it++){
+        cout << *it << '\n';
     }
-
-    // for (vector<char>::iterator it = state.begin();it!=state.end();it++){
-    //     cout << state[*it] << '\n';
-    // }
-    // cout << 'c'<<'\n';
 }
 
-/*
-Q1 : stack
-
-
-
-
-*/
