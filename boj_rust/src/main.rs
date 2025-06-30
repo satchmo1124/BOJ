@@ -2,7 +2,7 @@ use std::io::{self, Read};
 use std::collections::HashMap;
 
 fn state(t:i32,v:Vec<i32>) {
-    v.
+    
 }
 
 fn main(){
