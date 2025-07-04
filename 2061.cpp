@@ -12,5 +12,5 @@ using namespace std;
 int main(){
     string K,L;
     cin >> K >> L;
-
+    
 }
