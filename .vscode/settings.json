@@ -3,6 +3,7 @@
         "iostream": "cpp",
         "random": "cpp",
         "type_traits": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "ostream": "cpp"
     }
 }
