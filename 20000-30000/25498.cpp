@@ -1,52 +1,64 @@
-#include <iostream>
-#include <vector>
-
+#include <bits/stdc++.h>
 using namespace std;
+/*
+root 기준으로, 인접한 정점들의 문자 체크
+만약 가장 사전순으로 큰 알파벳이 1개라면,해당 root로 ㄱㄱ.
+만약 // 2개 이상이라면, 다른 root도 확인 후 비교.
+*/
+string Solve(const vector<vector<int>>&G,string S,vector<int>&visited,int root){
 
-vector<vector<int>>G;
-vector<int>visited;
-string S;
+    visited[root] = 1;
 
+    int max_alpha = 'a'-1;
 
-
-void func(int u){
-    visited[u] = 1;
-    int l_idx = 0;
-    int l_alpha = 'a'-1;
-    for (auto it = G[u].begin();it!=G[u].end();it++){
-        if (!visited[*it]){
-            int v = *it; // idx
-            if (l_alpha < S[v]){
-                l_idx = v;
-                l_alpha = S[v];
-            }
-        }
+    for (int i=0;i<G[root].size();i++){
+        int v = G[root][i];
+        if (!visited[v] && max_alpha < S[v]){
+            max_alpha = S[v];
+        } 
     }
-    if (l_alpha == 'a'-1){
-        return;
+    char node_alpha = S[root];
+    
+    string s_max = "";
+    string tmp = "";
+    for (int i=0;i<G[root].size();i++){
+        int v = G[root][i];
+        if (visited[v] || S[v] != max_alpha) continue;
+        tmp = Solve(G,S,visited,v);
+        if (s_max < tmp) s_max = tmp;
     }
-    cout << S[l_idx-1];
-    func(l_idx);
+
+
+    string res = "";
+    res.push_back(node_alpha);
+    res += s_max;
+
+    return res;
 }
 
-int main(){
-    int N;
-    cin >> N;
+
+void MakeGraph(vector<vector<int>>&G,int N,string &S){
     cin >> S;
-    G.resize(N+1); // 1 ~ N 
-    visited.resize(N+1,0);
+    S = " " + S;
     int u,v;
-
-
-
-
     for (int i=0;i<N-1;i++){
         cin >> u >> v;
         G[u].push_back(v);
         G[v].push_back(u);
     }
-    cout << S[0];
-    func(1);
+}
 
-    return 0;
+int main(){
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int N;
+    string S;    
+    cin >> N;
+
+    vector<int>visited(N+1,0);
+    vector<vector<int>>G(N+1);
+
+    MakeGraph(G,N,S);
+    cout << Solve(G,S,visited,1);
+
 }

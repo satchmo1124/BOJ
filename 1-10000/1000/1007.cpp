@@ -1,138 +1,106 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-typedef unsigned long long lli;
-
-/*
-1007인데 벡터의 길이의 합으로 구함...
-원래는 합의 길이를 구해야 함 ㅇㅅㅇ 
-
-*/
-
-/*
-class Vec
-*/
-class Vec {
-public:
-    lli x,y;
-    lli len;
-
-    Vec(lli x,lli y) {
-        this->x = x; this->y = y;
-        calc_len();
-    }
-    Vec () {
-        this->x = this->y = this->len = -1;
-    }
-    void calc_len(){
-        this->len = x*x + y*y;
-    }
-
-    static Vec add(Vec v1,Vec v2){
-        return Vec(v1.x+v2.x,v1.y+v2.y); 
-    }
-    static Vec sub(Vec v1,Vec v2){
-        return Vec(v1.x-v2.x,v1.y-v2.y);
-    }
-    void accum_add(Vec v) {
-        this->x += v.x;
-        this->y += v.y;
-        calc_len();
-    }
-    void accum_sub(Vec v){
-        this->x -= v.x;
-        this->y -= v.y;
-        calc_len();
-    }
-};
-
-
+#include <bits/stdc++.h>
+#define ll long long
 using namespace std;
 
-vector<vector<Vec>> adj(20,vector<Vec>(20,Vec(0,0)));
+struct Point{
+    int x,y;
+};
 
+void MinMatch(vector<Point>&V,int N){
+    int R = N / 2;
+    vector<bool>v(N);
 
+    ll x,y;
+    ll min = 32e12 + 1,local = 0;
 
-Vec find_dfs(int N,int visited[],Vec p){
-
-    Vec local_p=Vec();
-
-    bool is_final = true;
-
-    for (int i=0;i<N;i++){
-        if (!visited[i]){
-            visited[i] = 1;
-            is_final = false;
-
-            for (int j=0;j<N;j++){
-                if (!visited[j]){
-                    visited[j] = 1;
-
-                    Vec new_p = find_dfs(N,visited,Vec::add(p,adj[i][j]));
-                    if (local_p.len == -1 || local_p.len > new_p.len ){
-                        local_p = new_p;
-                    }
-                    visited[j] = 0;
-                }
+    fill(v.begin(),v.begin()+R,true);
+    do{
+        x = y = 0;
+        for (int i=0;i<N;i++){
+            if (v[i]){
+                x += V[i].x;
+                y += V[i].y;
             }
-            visited[i] = 0;
+            else{
+                x -= V[i].x;
+                y -= V[i].y;
+            }
         }
-    }
-    if (is_final) {
-        return p;
-    }
-    return local_p;
-}
+        local = x * x + y * y;
+        if (min > local) min = local;
 
+    }while(prev_permutation(v.begin(),v.end()));
+
+    long double res = sqrt(min);
+    cout << fixed;
+    cout.precision(7);
+    cout << res << '\n';
+}
 
 int main(){
-    ios::sync_with_stdio(false);
-	cin.tie(NULL);
-    cout.fixed;
-    cout.precision(16);
-    int T;
-    cin>>T;
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int T,N;
+    Point p;
 
-
+    cin >> T;
     for (int i=0;i<T;i++){
-        int N;
-        cin>>N;
-
-        vector<Vec>P;
-        Vec p;
-
+        cin >> N;
+        vector<Point>V;
         for (int i=0;i<N;i++){
-            cin>>p.x >> p.y;
-            P.push_back(p);
+            cin >> p.x >> p.y;
+            V.push_back(p);
         }
-
-        for (int i=0;i<N-1;i++){
-            for (int j=i+1;j<N;j++){
-                adj[i][j] = Vec::sub(P[i],P[j]);
-                adj[j][i] = Vec::sub(P[j],P[i]);
-            }
-        }
-
-        int visited[20] = {0,};
- 
-        Vec local_p = Vec(); 
-
-        for (int i=0;i<N;i++){
-            visited[i] = 1;
-            for (int j=0;j<N;j++){
-                if (i==j) continue;
-                visited[j] = 1;
-                Vec new_p = find_dfs(N,visited,adj[i][j]);
-                if (local_p.len == -1 || local_p.len > new_p.len ){
-                    local_p = new_p;
-                }
-                visited[j] = 0;
-            }
-            visited[i] = 0;
-        }
-        
-        cout << sqrt(local_p.len)<<'\n';
-       
+        MinMatch(V,N);
     }
-    
 }
+
+/*
+TC :
+
+nC(n/2) * n * T 
+
+20C10 = 184756
+20C10 * 20 = 3695120
+
+좌표 합 최대 : (200,000 * 20)^ 2 * 2 =  
+*/
+
+/*
+배운 것:
+
+- next_permutation
+https://stackoverflow.com/questions/9430568/generating-combinations-in-c
+
+
+- 조합
+
+- aeb -> a * 10 ^ b
+
+- 제곱근 정확하게 출력하기
+
+- `std::sqrt` 와 관련된 다른 글
+https://www.acmicpc.net/board/view/103111
+*/
+
+/*
+더 궁금한 점:
+
+Q:
+20C10이렇게 하면, 사실 여기서는 N/2 묶음으로 두 덩이씩 
+분할만 하면 되므로, 총 경우의 수는 20C10 / 2가 된다. 
+하지만, prev_permutation을 사용하면 20C10의 경우를 다 확인하게 되므로..
+
+
+Q:
+prev_permutation은 어떻게 작동할까?
+
+
+Q : 수 자체가 해당 자릿수까지 구해진건지.
+아니면 수는 정확하게 구했는데 출력이 짤린건지.
+
+A : 출력이 짤림.
+cout << fixed;
+cout.precision(7);
+하면 됨.
+*/
